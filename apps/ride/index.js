@@ -26,11 +26,10 @@ skillService.launch(function(request, response) {
     var prompt = "Welcome to Ride. I can tell you if you should ride your bike today. To start, please tell me your zipcode.";
     response.say(prompt).shouldEndSession(false);
   } else {
-    rideHelper.getWeather(rideHelper.zipcode).then(function(data){
+    rideHelper.getWeather(zip).then(function(data) {
       var responseObject = rideHelper.generateResponse(data);
       console.log(responseObject.speech);
-      response.card("Temperature: " +  responseObject.temperature + ". Humidity: " + responseObject.humidity + ". Pressure: " + responseObject.pressure + ".");
-      response.say(responseObject.speech);
+      response.say(responseObject.speech).send();
       response.shouldEndSession(true);
     });
   }
@@ -68,7 +67,7 @@ skillService.intent("rideIntent", {
 skillService.intent("zipcodeIntent", {
   "slots": {
     "zip": "NUMBER"
-  }, "utterances": ["{-|zip}"]
+  }, "utterances": ["My zipcode is {-|zip}", "{It's|it is|} {-|zip}"]
   }, function(request, response) {
     var rideHelper = getRideHelper(request),
       zip = request.data.request.intent.slots.zip.value;
@@ -80,7 +79,6 @@ skillService.intent("zipcodeIntent", {
       rideHelper.getWeather(zip).then(function(data) {
         var responseObject = rideHelper.generateResponse(data);
         console.log(responseObject.speech);
-        response.card("Temperature: " +  responseObject.temperature + ". Humidity: " + responseObject.humidity + ". Pressure: " + responseObject.pressure + ".");
         response.say(responseObject.speech).send();
         response.shouldEndSession(true);
       });
