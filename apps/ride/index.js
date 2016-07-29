@@ -52,7 +52,6 @@ skillService.intent("rideIntent", {
     if (rideHelper.getZipcode()) {
       var responseObject = rideHelper.generateResponse(data);
       console.log(responseObject.speech);
-      response.card("Temperature: " +  responseObject.temperature + ". Humidity: " + responseObject.humidity + ". Pressure: " + responseObject.pressure + ".");
       response.say(responseObject.speech);
       response.shouldEndSession(true);
     } else {

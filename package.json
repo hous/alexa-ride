@@ -1,10 +1,11 @@
 {
-  "name": "alexa-insult-me",
+  "name": "alexa-bootstrap",
   "version": "1.0.0",
-  "description": "You are a horrible person and you should feel bad about yourself.",
+  "description": "Container for developing and testing alexa skills, using alexa-app and alexa-server.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "db": "dynamodb-local -sharedDb -inMemory -port 4000",
+    "server": "node server"
   },
   "author": "Adam Housman <adam@adamhousman.com>",
   "license": "ISC",

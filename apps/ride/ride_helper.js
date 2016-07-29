@@ -35,7 +35,7 @@ RideHelper.prototype.getWeather = function(zip) {
 
 // TODO - work on dew point calculation
 RideHelper.prototype.generateResponse = function(result) {
-  this.day = 0;
+  this.day = 1;
   var data = {
     date : new Date(result.list[this.day].dt * 1000).toString(),
     temperature : Math.ceil((result.list[this.day].temp.day + result.list[this.day].temp.eve + result.list[this.day].temp.morn) / 3),
@@ -62,7 +62,7 @@ RideHelper.prototype.generateResponse = function(result) {
   } else if (300 <= data.weatherId && data.weatherId <= 321 || data.weatherId == 500) {
     template = _.template("It's looking like there'll be some light rain today, but nothing too crazy. You could probably go for it if you don't mind getting a little wet.");
   } else if (501 <= data.weatherId && data.weatherId <= 531) {
-    template = _.template("It's going to rain today, so you might want to leave the bike at home.");
+    template = _.template("It's definitely going to rain, so you'll probably want to leave the bike at home.");
   } else if (data.weatherId <= 600) {
     template = _.template("You can expect a little snow today. Nothing crazy, so it could be OK, but it's up to you.");
   } else if (601 <= data.weatherId && data.weatherId <= 622) {
