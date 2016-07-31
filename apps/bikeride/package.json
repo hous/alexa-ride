@@ -1,0 +1,14 @@
+{
+  "name": "alexa-bikeride",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "adam@adamhousman.com",
+  "license": "ISC",
+  "dependencies": {
+    "alexa-app": "^2.3.4",
+    "lodash": "^4.14.1",
+    "request": "^2.74.0",
+    "request-promise": "^4.1.0"
+  }
+}

@@ -15,3 +15,6 @@ dist
 # IntelliJ
 .idea
 *.iml
+
+# app config
+apps/bikeride/config.js

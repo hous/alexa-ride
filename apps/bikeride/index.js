@@ -1,18 +1,33 @@
 "use strict";
 module.change_code = 1;
 var _ = require("lodash");
+var config = require("./config");
+
+var RIDE_SESSION_KEY = "ride_session";
+var RideHelper = require("./ride_helper");
+
+var DatabaseHelper = require('./database_helper');
+var databaseHelper = new DatabaseHelper();
+
 var Skill = require("alexa-app");
 var skillService = new Skill.app("ride");
-var RideHelper = require("./ride_helper");
-var RIDE_SESSION_KEY = "ride_session";
 
-var getRideHelper = function(request) {
+skillService.pre = function(request, response, type) {
+  databaseHelper.createTable();
+};
+
+var getRideHelperFromRequest = function(request) {
   var rideHelperData = request.session(RIDE_SESSION_KEY);
+  return getRideHelper(rideHelperData);
+};
+
+var getRideHelper = function(rideHelperData) {
   if (rideHelperData === undefined) {
     rideHelperData = {};
   }
   return new RideHelper(rideHelperData);
 };
+
 var cancelIntentFunction = function(request, response) {
   response.say("Goodbye!").shouldEndSession(true);
 };
@@ -91,5 +106,20 @@ skillService.intent("zipcodeIntent", {
     return false;
   }
 );
+
+skillService.sessionEnded(function(request,response) {
+    // Clean up the user's server-side stuff, if necessary
+    var userId = request.userId;
+    var rideHelper = getRideHelperFromRequest(request);
+    console.log("Attempting to store session data.")
+    databaseHelper.storeData(userId, rideHelper).then(
+      function(result) {
+        console.log("Result of storeData: ");
+        console.log(result);
+        return result;
+      }).catch(function(error) {
+        console.log(error);
+      });
+});
 
 module.exports = skillService;

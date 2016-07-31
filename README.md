@@ -1,11 +1,9 @@
-Alexa skill to determine if it is a good day to ride your bike to work.
+Dependencies:
 
-TODO: dewpoint calculation, set up ranges / flags that should be told to user. Yes / No / Maybe
+gulp, dynamodb-local, node v4.3.2 (use n or nvm)
+$ brew install dynamodb-local
+$ npm install -g n
+$ n 4.3.2
 
-If it is questionable, say why...
 
-Close to edge of temperature or % chance ranges...
-
-Save session information of whether or not the user was asking for TODAY or TOMORROW, and default to that moving forward.
-
-Go through weather codes.
+TODO: ignore config

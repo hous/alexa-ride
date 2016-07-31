@@ -1,35 +1,40 @@
 {
-  "name": "alexa-insult-me",
+  "name": "alexa-bikeride",
   "version": "1.0.0",
-  "description": "You are a horrible person and you should feel bad about yourself.",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "db": "dynamodb-local -sharedDb -inMemory -port 4000",
+    "server": "node server",
+    "dev": "concurrently --kill-others 'npm run db' 'npm run server'"
   },
-  "author": "Adam Housman <adam@adamhousman.com>",
+  "author": "adam@adamhousman.com",
   "license": "ISC",
-  "devDependencies": {
-    "aws-sdk": "^2.1.4",
-    "del": "^1.1.0",
-    "gulp": "^3.9.0",
-    "gulp-install": "^0.2.0",
-    "gulp-rename": "^1.2.0",
-    "gulp-token-replace": "^1.0.2",
-    "gulp-util": "^3.0.6",
-    "gulp-zip": "^3.0.2",
-    "run-sequence": "^1.0.2",
-    "supervisor": "^0.6.0",
-    "yargs": "^3.15.0"
-  },
   "dependencies": {
     "alexa-app": "^2.3.4",
-    "lodash": "^4.14.0",
+    "alexa-sdk": "^1.0.3",
+    "aws-sdk": "^2.4.11",
+    "body-parser": "^1.15.2",
+    "dynasty": "0.2.4",
+    "ejs": "^2.5.1",
+    "express": "^4.14.0",
+    "lodash": "^4.14.1",
     "request": "^2.74.0",
-    "request-promise": "^4.0.2",
-    "bluebird": "^2.9.34",
-    "body-parser": "~1.0.1",
-    "ejs": "~0.7.1",
-    "express": "~4.0.0",
-    "hotswap": "^1.1.0"
+    "request-promise": "^4.1.0"
+  },
+  "devDependencies": {
+    "bluebird": "^3.4.1",
+    "concurrently": "^2.2.0",
+    "del": "^2.2.1",
+    "gulp": "^3.9.1",
+    "gulp-dependency-install": "0.0.8",
+    "gulp-install": "^0.6.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-token-replace": "^1.0.3",
+    "gulp-util": "^3.0.7",
+    "gulp-zip": "^3.2.0",
+    "hotswap": "^1.1.0",
+    "run-sequence": "^1.2.2",
+    "yargs": "^4.8.1"
   }
 }
