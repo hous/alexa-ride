@@ -4,7 +4,6 @@ module.change_code = 1;
 
 var _ = require("lodash");
 var config = require("./config");
-var Helper = require("./ride_helper"); // Move to config
 var TABLE_NAME = "rideUserData"; // Move to config
 var localUrl = "http://localhost:4000";
 var localCredentials = {
@@ -37,11 +36,11 @@ DatabaseHelper.prototype.createTable = function() {
     });
 };
 
-DatabaseHelper.prototype.storeData = function(userId, rideUserData) {
+DatabaseHelper.prototype.storeData = function(userId, helper) {
   console.log("writing data to database for user " + userId);
   return getTable().insert({
     userId: userId,
-    data: JSON.stringify(madlibData)
+    data: JSON.stringify(helper)
   }).catch(function(error) {
     console.log(error);
   });
@@ -52,7 +51,7 @@ DatabaseHelper.prototype.readData = function(userId) {
   return getTable().find(userId)
     .then(function(result) {
       var data = (result === undefined ? {} : JSON.parse(result["data"]));
-      return new Helper(data);
+      return data;
     }).catch(function(error) {
     console.log(error);
   });

@@ -7,7 +7,6 @@ var ENDPOINT = 'http://api.openweathermap.org/data/2.5/forecast/daily?appid=18c3
 // Get two days.
 // TODO save Celsius or Fahrenheit units=imperial / units=metric
 
-
 function RideHelper (obj) {
   this.unit = "F";
   this.zipcode = null; //TODO - check session
@@ -15,19 +14,11 @@ function RideHelper (obj) {
   for (var prop in obj) this[prop] = obj[prop];
 }
 
-RideHelper.prototype.getZipcode = function() {
-  return this.zipcode;
-};
-
-RideHelper.prototype.storeZip = function(zip) {
-  this.zipcode = zip;
-  //TODO - write to DB
-};
-
-RideHelper.prototype.getWeather = function(zip) {
+RideHelper.prototype.getWeather = function() {
+  var zipcode = this.zip;
   var options = {
     method: 'GET',
-    uri: ENDPOINT + zip,
+    uri: ENDPOINT + zipcode,
     json: true
   };
   return requestPromise(options);
@@ -35,7 +26,6 @@ RideHelper.prototype.getWeather = function(zip) {
 
 // TODO - work on dew point calculation
 RideHelper.prototype.generateResponse = function(result) {
-  this.day = 1;
   var data = {
     date : new Date(result.list[this.day].dt * 1000).toString(),
     temperature : Math.ceil((result.list[this.day].temp.day + result.list[this.day].temp.eve + result.list[this.day].temp.morn) / 3),
