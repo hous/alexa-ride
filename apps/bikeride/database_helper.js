@@ -24,7 +24,6 @@ var getTable = function() {
 };
 
 DatabaseHelper.prototype.createTable = function() {
-  console.log("Firing createTable");
   return dynasty.describe(TABLE_NAME)
     .catch(function(error) {
       console.log("createTable::error: ", error);
@@ -37,7 +36,6 @@ DatabaseHelper.prototype.createTable = function() {
 };
 
 DatabaseHelper.prototype.storeData = function(userId, helper) {
-  console.log("writing data to database for user " + userId);
   return getTable().insert({
     userId: userId,
     data: JSON.stringify(helper)
@@ -47,7 +45,6 @@ DatabaseHelper.prototype.storeData = function(userId, helper) {
 };
 
 DatabaseHelper.prototype.readData = function(userId) {
-  console.log("reading data with user id of : " + userId);
   return getTable().find(userId)
     .then(function(result) {
       var data = (result === undefined ? {} : JSON.parse(result["data"]));

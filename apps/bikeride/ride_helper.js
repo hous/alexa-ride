@@ -25,13 +25,14 @@ RideHelper.prototype.getWeather = function() {
 };
 
 // TODO - work on dew point calculation
-RideHelper.prototype.generateResponse = function(result) {
+RideHelper.prototype.generateResponse = function(result, day) {
+  var requestedDay = day ? day : this.day;
   var data = {
-    date : new Date(result.list[this.day].dt * 1000).toString(),
-    temperature : Math.ceil((result.list[this.day].temp.day + result.list[this.day].temp.eve + result.list[this.day].temp.morn) / 3),
-    pressure : result.list[this.day].pressure,
-    humidity : result.list[this.day].humidity,
-    weatherId : parseInt(result.list[this.day].weather[0].id, 10)
+    date : new Date(result.list[requestedDay].dt * 1000).toString(),
+    temperature : Math.ceil((result.list[requestedDay].temp.day + result.list[requestedDay].temp.eve + result.list[requestedDay].temp.morn) / 3),
+    pressure : result.list[requestedDay].pressure,
+    humidity : result.list[requestedDay].humidity,
+    weatherId : parseInt(result.list[requestedDay].weather[0].id, 10)
   };
 
   data.dewPoint = this.getDewpoint(data.temperature, data.humidity) + 2; // Calc is a little inaccuracte, pad by 2 to be safe. "better safe than sweaty"

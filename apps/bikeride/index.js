@@ -14,8 +14,9 @@ var skillService = new Skill.app("ride");
 
 skillService.pre = function(request, response, type) {
   databaseHelper.createTable(); //TODO - only do this once.
-  if (request.sessionDetails.application.applicationId!=config.amazonAppId) {
+  if (request.sessionDetails.application.applicationId != config.amazonAppId && request.sessionDetails.application.applicationId!="amzn1.echo-sdk-ams.app.000000-d0ed-0000-ad00-000000d00ebe") {
     // Fail ungracefully
+    console.log("Failed to respond due to an invalid applicationId.");
     response.fail("Invalid applicationId");
   }
 };
@@ -86,8 +87,8 @@ skillService.intent("zipcodeIntent", {
       var zip = request.data.request.intent.slots.zip.value;
       if(zip.length === 5) { //TODO no built-in?
         helper.zipcode = zip;
-        helper.getWeather().then(function(data) {
-          var responseObject = helper.generateResponse(data);
+        helper.getWeather().then(function(weatherData) {
+          var responseObject = helper.generateResponse(weatherData);
           response.say(responseObject.speech).send();
           response.shouldEndSession(true);
           databaseHelper.storeData(request.userId, helper).then(
@@ -104,9 +105,9 @@ skillService.intent("zipcodeIntent", {
       } else {
         response.reprompt("Sorry, I didn't catch that. Please give me a valid, five-digit zipcode.");
         response.shouldEndSession(false);
+        response.send();
       }
       response.session(RIDE_SESSION_KEY, helper);
-      response.send();
     });
     return false;
 });
@@ -117,22 +118,14 @@ skillService.intent("rideIntent", {
   }, "utterances": ["{should|can} I ride {-|day}", "if I {should|can} ride {-|day}", "{about|with} {-|day}", "{-|day}"]
   }, function(request, response) {
     getRideHelper(request).then(function(helper){
-      helper.day = request.data.request.intent.slots.day.value === "tomorrow" ? 1 : 0;
+      var requestedDay = request.data.request.intent.slots.day.value === "tomorrow" ? 1 : 0;
       if (helper.zipcode !== null) {
-        helper.getWeather().then(function(data) {
-          console.log(data);
-          var responseObject = helper.generateResponse(data);
+        helper.getWeather().then(function(weatherData) {
+          console.log(weatherData);
+          var responseObject = helper.generateResponse(weatherData, requestedDay);
           response.say(responseObject.speech).send();
           response.shouldEndSession(true);
           response.send();
-          databaseHelper.storeData(request.userId, helper).then(
-            function(result) {
-              console.log("Storing data for user", request.userId, "after successful zipCodeIntent.");
-              console.log(result);
-            }).catch(function(error) {
-              console.log("Error storing data for user", request.userId, "after successful zipCodeIntent.");
-              console.log(error);
-            });
         });
       } else {
         response.say("What's your zipcode?");
@@ -145,11 +138,10 @@ skillService.intent("rideIntent", {
 });
 
 skillService.sessionEnded(function(request,response) {
+/*
   getRideHelper(request).then(function(helper){
-    console.log("Attempting to store session data.")
     databaseHelper.storeData(request.userId, helper).then(
       function(result) {
-        console.log("Result of storeData: ");
         console.log(result);
         return result;
       }).catch(function(error) {
@@ -157,6 +149,7 @@ skillService.sessionEnded(function(request,response) {
       });
   });
   return false;
+*/
 });
 
 module.exports = skillService;
