@@ -6,13 +6,15 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var args   = require('yargs').argv;
 var del = require('del');
-var install = require('gulp-install');
+var gulpDependencyInstall = require('gulp-dependency-install');
 var zip = require('gulp-zip');
 var AWS = require('aws-sdk');
 var fs = require('fs');
 var runSequence = require('run-sequence');
 
-var CONFIG = require('./apps/ride/config');
+var CONFIG = require('./apps/bikeride/config');
+var app_dir = './apps/bikeride';
+var dist_dir = './dist';
 
 /**
  * This will publish a new version of the lambda function to prod.
@@ -30,20 +32,25 @@ var CONFIG = require('./apps/ride/config');
 gulp.task('publish', function(callback) {
   return runSequence(
     ['clean'],
+//    ['npm-install'], // Not working correctly on Lambda, dependencies are missing. Have to manually npm install in the app directory before publishing...
     ['zip'],
     ['upload'],
     callback
   );
 });
 
+gulp.task('npm-install', function () {
+    return gulpDependencyInstall.install([app_dir]);
+});
+
 gulp.task('zip', function() {
-  return gulp.src('apps/ride/**/*')
+  return gulp.src(app_dir + '/**/*')
     .pipe(zip('archive.zip'))
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('clean', function(cb) {
-  del('./dist/archive.zip', cb);
+gulp.task('clean', function() {
+  return del('./dist/archive.zip');
 });
 
 /**
@@ -84,6 +91,8 @@ gulp.task('upload', function() {
           var warning = 'Package upload failed. '
           warning += 'Check your iam:PassRole permissions.'
           gutil.log(warning);
+        } else {
+          console.log('Package uploaded successfully.')
         }
       });
     });
