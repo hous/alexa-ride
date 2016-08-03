@@ -12,9 +12,9 @@ var localCredentials = {
   secretAccessKey: config.secretAccessKey
 };
 var localDynasty = require("dynasty")(localCredentials, localUrl);
-var dynasty = localDynasty;
+//var dynasty = localDynasty;
 //comment line 13 and uncomment line 15 for production
-//var dynasty = require("dynasty")({});
+var dynasty = require("dynasty")({});
 
 function DatabaseHelper() {
 }
