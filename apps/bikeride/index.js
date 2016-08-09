@@ -41,13 +41,13 @@ var getRideHelper = function(request) {
     console.log(error);
     var data = request.session(RIDE_SESSION_KEY) ? request.session(RIDE_SESSION_KEY) : {};
     return new RideHelper(data);
-  })
+  });
 };
 
 skillService.launch(function(request, response) {
   console.log("Fired 'launch'.");
-    console.log("Session:");
-    console.log(request.session(RIDE_SESSION_KEY));
+  console.log("Session:");
+  console.log(request.session(RIDE_SESSION_KEY));
   getRideHelper(request).then(function(helper){
     if (!helper.zipcode){
       var prompt = "Welcome to Ride. I can tell you if you should ride your bike today. To start, please tell me your zipcode.";
@@ -88,13 +88,14 @@ skillService.intent("zipcodeIntent", {
   }, "utterances": ["My zipcode is {-|zip}", "{It's|it is|for|with|} {-|zip}"]
   }, function(request, response) {
     console.log("Fired 'zipcodeIntent'.");
-    console.log("Session:");
-    console.log(request.session(RIDE_SESSION_KEY));
     getRideHelper(request).then(function(helper){
       var zip = request.data.request.intent.slots.zip.value;
       if( zip && ( zip.length === 5 || ( zip.length === 6 && zip[0] === '4' ) ) ){ // Yucky hack because Alexa hears "4" instead of "for" when asking "Ask for 11215"
         helper.zipcode = zip.length === 5 ? zip : zip.substr(1,5); // Yuck
-        var requestedDay = response.session(RIDE_SESSION_KEY).day ? response.session(RIDE_SESSION_KEY).day : helper.day;
+        var requestedDay = 0;
+        if ( !_.isUndefined(request.session(RIDE_SESSION_KEY)) && !_.isUndefined(request.session(RIDE_SESSION_KEY).day) ){
+          requestedDay = request.session(RIDE_SESSION_KEY).day;
+        }
         helper.day = requestedDay;
         console.log("Zipcode:", helper.zipcode);
         helper.getWeather().then(function(weatherData) {
@@ -128,18 +129,11 @@ skillService.intent("rideIntent", {
   }, "utterances": ["{should|can} I ride {-|day}", "if I {should|can} ride {-|day}", "{about|with} {-|day}", "{-|day}"]
   }, function(request, response) {
     console.log("Fired 'rideIntent'.");
-    console.log("Session:");
-    console.log(request.session(RIDE_SESSION_KEY));
-    console.log("Day:", request.data.request.intent.slots.day.value);
     getRideHelper(request).then(function(helper){
       var requestedDay = request.data.request.intent.slots.day.value === "tomorrow" ? 1 : 0;
-      console.log("requestedDay");
-      console.log(requestedDay);
-      helper.day = requestedDay;
       if (helper.zipcode !== null) {
         helper.getWeather().then(function(weatherData) {
-          console.log(weatherData);
-          var responseObject = helper.generateResponse(weatherData);
+          var responseObject = helper.generateResponse(weatherData, requestedDay);
           response.say(responseObject.speech).send();
           response.shouldEndSession(true);
           response.send();

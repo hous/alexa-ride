@@ -10,7 +10,6 @@ var ENDPOINT = 'http://api.openweathermap.org/data/2.5/forecast/daily?appid=18c3
 function RideHelper (obj) {
   this.unit = "F";
   this.zipcode = null; //TODO - check session
-  this.day = 0; //0 for today, 1 for tomorrow (based on API response index)
   for (var prop in obj) this[prop] = obj[prop];
 }
 
@@ -25,11 +24,9 @@ RideHelper.prototype.getWeather = function() {
 };
 
 // TODO - work on dew point calculation
-RideHelper.prototype.generateResponse = function(result) {
+RideHelper.prototype.generateResponse = function(result, day) {
   console.log("generateResponse");
-  var requestedDay = this.day;
-  console.log("requestedDay");
-  console.log(requestedDay);
+  var requestedDay = day ? day : 0;
   var data = {
     date : new Date(result.list[requestedDay].dt * 1000).toString(),
     temperature : Math.ceil((result.list[requestedDay].temp.day + result.list[requestedDay].temp.eve + result.list[requestedDay].temp.morn) / 3),
