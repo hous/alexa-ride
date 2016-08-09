@@ -45,6 +45,9 @@ var getRideHelper = function(request) {
 };
 
 skillService.launch(function(request, response) {
+  console.log("Fired 'launch'.");
+    console.log("Session:");
+    console.log(request.session(RIDE_SESSION_KEY));
   getRideHelper(request).then(function(helper){
     if (!helper.zipcode){
       var prompt = "Welcome to Ride. I can tell you if you should ride your bike today. To start, please tell me your zipcode.";
@@ -65,6 +68,7 @@ skillService.launch(function(request, response) {
 
 skillService.intent("AMAZON.HelpIntent", {},
   function(request, response) {
+    console.log("Fired 'AMAZON.HelpIntent'.");
     getRideHelper(request).then(function(helper){
       var help = "Welcome to Ride. I can tell you whether or not you should ride your bike today."
       if (helper.zipcode !== null) {
@@ -83,12 +87,18 @@ skillService.intent("zipcodeIntent", {
     "zip": "NUMBER"
   }, "utterances": ["My zipcode is {-|zip}", "{It's|it is|for|with|} {-|zip}"]
   }, function(request, response) {
+    console.log("Fired 'zipcodeIntent'.");
+    console.log("Session:");
+    console.log(request.session(RIDE_SESSION_KEY));
     getRideHelper(request).then(function(helper){
       var zip = request.data.request.intent.slots.zip.value;
-      if(zip.length === 5) { //TODO no built-in?
-        helper.zipcode = zip;
+      if( zip && ( zip.length === 5 || ( zip.length === 6 && zip[0] === '4' ) ) ){ // Yucky hack because Alexa hears "4" instead of "for" when asking "Ask for 11215"
+        helper.zipcode = zip.length === 5 ? zip : zip.substr(1,5); // Yuck
+        var requestedDay = response.session(RIDE_SESSION_KEY).day ? response.session(RIDE_SESSION_KEY).day : helper.day;
+        helper.day = requestedDay;
+        console.log("Zipcode:", helper.zipcode);
         helper.getWeather().then(function(weatherData) {
-          var responseObject = helper.generateResponse(weatherData);
+          var responseObject = helper.generateResponse(weatherData, requestedDay);
           response.say(responseObject.speech).send();
           response.shouldEndSession(true);
           databaseHelper.storeData(request.userId, helper).then(
@@ -103,7 +113,7 @@ skillService.intent("zipcodeIntent", {
             });
         });
       } else {
-        response.reprompt("Sorry, I didn't catch that. Please give me a valid, five-digit zipcode.");
+        response.reprompt("Sorry, I didn't catch that. Please give me a valid five-digit zipcode.");
         response.shouldEndSession(false);
         response.send();
       }
@@ -117,12 +127,19 @@ skillService.intent("rideIntent", {
     "day": "TodayOrTomorrow"
   }, "utterances": ["{should|can} I ride {-|day}", "if I {should|can} ride {-|day}", "{about|with} {-|day}", "{-|day}"]
   }, function(request, response) {
+    console.log("Fired 'rideIntent'.");
+    console.log("Session:");
+    console.log(request.session(RIDE_SESSION_KEY));
+    console.log("Day:", request.data.request.intent.slots.day.value);
     getRideHelper(request).then(function(helper){
       var requestedDay = request.data.request.intent.slots.day.value === "tomorrow" ? 1 : 0;
+      console.log("requestedDay");
+      console.log(requestedDay);
+      helper.day = requestedDay;
       if (helper.zipcode !== null) {
         helper.getWeather().then(function(weatherData) {
           console.log(weatherData);
-          var responseObject = helper.generateResponse(weatherData, requestedDay);
+          var responseObject = helper.generateResponse(weatherData);
           response.say(responseObject.speech).send();
           response.shouldEndSession(true);
           response.send();
@@ -133,6 +150,7 @@ skillService.intent("rideIntent", {
         response.shouldEndSession(false);
         response.send();
       }
+      response.session(RIDE_SESSION_KEY, helper);
     });
     return false;
 });
