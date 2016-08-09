@@ -131,6 +131,7 @@ skillService.intent("rideIntent", {
     console.log("Fired 'rideIntent'.");
     getRideHelper(request).then(function(helper){
       var requestedDay = request.data.request.intent.slots.day.value === "tomorrow" ? 1 : 0;
+      helper.day = requestedDay;
       if (helper.zipcode !== null) {
         helper.getWeather().then(function(weatherData) {
           var responseObject = helper.generateResponse(weatherData, requestedDay);
@@ -141,10 +142,10 @@ skillService.intent("rideIntent", {
       } else {
         response.say("What's your zipcode?");
         response.reprompt("I didn't hear anything. Give me your five-digit zipcode to continue.");
+        response.session(RIDE_SESSION_KEY, helper);
         response.shouldEndSession(false);
         response.send();
       }
-      response.session(RIDE_SESSION_KEY, helper);
     });
     return false;
 });
