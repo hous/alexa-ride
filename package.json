@@ -20,7 +20,8 @@
     "express": "^4.14.0",
     "lodash": "^4.14.1",
     "request": "^2.74.0",
-    "request-promise": "^4.1.0"
+    "request-promise": "^4.1.0",
+    "util": "^0.10.3"
   },
   "devDependencies": {
     "bluebird": "^3.4.1",

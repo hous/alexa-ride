@@ -6,4 +6,7 @@ $ npm install -g n
 $ n 4.3.2
 
 
-TODO: ignore config
+TODO:
+
+[ ] Clean up package jsons and make part of build process to npm install.
+[ ] 
