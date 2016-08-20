@@ -36,7 +36,6 @@ skillService.intent("AMAZON.StopIntent", {}, cancelIntentFunction);
  * @returns Promise
  */
 var getRideHelper = function(request) {
-  console.log(util.inspect(request, false, null));
 //  if (request === undefined || request.userId === undefined){}
   return databaseHelper.readData(request.userId).then( function(data) {
     return new RideHelper(data);
@@ -60,7 +59,6 @@ skillService.launch(function(request, response) {
     } else {
       helper.getWeather().then(function(data) {
         var responseObject = helper.generateResponse(data);
-        console.log(responseObject.speech);
         response.say(responseObject.speech).send();
         response.shouldEndSession(true);
         response.send();
@@ -97,10 +95,12 @@ skillService.intent("zipcodeIntent", {
   }, function(request, response) {
     console.log("Fired 'zipcodeIntent'.");
 
+//    console.log(util.inspect(request, false, null));
+
     response.reprompt("Sorry, I didn't catch that. Please give me a valid five-digit zipcode.");
 
     var zip = null;
-    if (_.has(request, 'data.request.intent.slots.zip')) {
+    if (_.has(request, 'data.request.intent.slots.zip.value')) {
       zip = request.data.request.intent.slots.zip.value;
       if( zip && ( zip.length === 5 || ( zip.length === 6 && zip[0] === '4' ) ) ){ // Yucky hack because Alexa hears "4" instead of "for" when asking "Ask for 11215"
         zip = zip.length === 5 ? zip : zip.substr(1,5); // I feel dirty
@@ -109,7 +109,7 @@ skillService.intent("zipcodeIntent", {
       }
     }
 
-    if ( zip ){
+    if ( !_.isNull(zip) ){
       getRideHelper(request).then(function(helper){
         helper.zipcode = zip.length === 5 ? zip : zip.substr(1,5); // Yuck
         var requestedDay = 0;
@@ -140,9 +140,10 @@ skillService.intent("zipcodeIntent", {
         response.session(RIDE_SESSION_KEY, helper);
       });
     } else {
-      response.reprompt("Sorry, I didn't catch that. Please give me a valid five-digit zipcode.");
-      response.shouldEndSession(false);
-      response.send();
+      console.log("Didn't get a valid ZIP.")
+      response.say("Please tell me your five digit zipcode.");
+      response.shouldEndSession(false, "Sorry, I didn't catch that. Please give me a valid five-digit zipcode.");
+      response.send(); 
     }
     return false;
 });
