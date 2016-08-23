@@ -77,7 +77,7 @@ skillService.intent("AMAZON.HelpIntent", {},
         help += " It looks like you've used this skill before, and your zipcode is currently set to <say-as interpret-as='digits'>" + helper.zipcode + "</say-as>."
         + " If you'd like to change it, please just say a different five digit zipcode."
         + " If you'd like to hear my recommendation on whether or not you should ride your bike, just say 'Alexa, ask Should I Ride today', or, 'Alexa, ask Should I Ride tomorrow'.";
-        response.say(help).shouldEndSession(true);
+        response.say(help).shouldEndSession(false);
         response.send();
       } else {
         help += " To start, please tell me your five digit zipcode.";

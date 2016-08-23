@@ -14,7 +14,8 @@ function RideHelper (obj) {
 }
 
 RideHelper.prototype.getWeather = function() {
-  var zipcode = this.zip;
+  var zipcode = this.zipcode;
+  console.log("Fetching weather from: " + ENDPOINT + zipcode);
   var options = {
     method: 'GET',
     uri: ENDPOINT + zipcode,
