@@ -3,7 +3,7 @@ module.change_code = 1;
 var _ = require('lodash');
 var requestPromise = require('request-promise');
 
-var ENDPOINT = 'http://api.openweathermap.org/data/2.5/forecast/daily?appid=18c311dc5e30277498b3a08f7cb0c4e3&cnt=5&units=imperial&zip=';
+var ENDPOINT = 'http://api.openweathermap.org/data/2.5/forecast/daily?appid=18c311dc5e30277498b3a08f7cb0c4e3&cnt=5&units=imperial&q=';
 // Get two days.
 // TODO save Celsius or Fahrenheit units=imperial / units=metric
 
@@ -15,7 +15,7 @@ function RideHelper (obj) {
 
 RideHelper.prototype.getWeather = function() {
   var zipcode = this.zipcode;
-  console.log("Fetching weather from: " + ENDPOINT + zipcode);
+  console.log("Fetching weather from: " + ENDPOINT + zipcode + ",us");
   var options = {
     method: 'GET',
     uri: ENDPOINT + zipcode,
